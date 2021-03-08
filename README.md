@@ -10,7 +10,7 @@ In this project, I programmed three contracts for hypothetical compensation arra
 
 # Associate Profit Splitter
 
-This hypothetical contract is setup to facilitate the payment to three associate-level employees who are all paid the equal share of all ETH transferred into the contract. The contract can be scaled up to facilitate the payments to a large group of employees. 
+This hypothetical contract is setup to facilitate the payment to three associate-level employees who are all paid the equal share of all ETH transferred into the contract. The contract can be scaled up to facilitate the payments to a larger group of employees. 
 
 The Solidity code is shown in this screenshot:
 
@@ -24,7 +24,7 @@ This contract was deployed from my `Account 4` on my local `Ganache` chain and m
 ![cont1deploy_local](Screenshots/c1d.png)
 
 
-Here is the screenshot of the balance in my `Account 4` (HR) and my "employee" accounts before the the deposit of funds:
+Here is the screenshot of the balance in my `Account 4` (HR) and my "employee" accounts before the deposit of funds:
 
 ![Contract1_accbefore](Screenshots/c1accbefore.png)
 
@@ -69,6 +69,8 @@ This contract was deployed from my `Account 4` on my local `Ganache` chain and m
 I booked a deposit transaction for ETH 30:
 ![c2tx](Screenshots/c2tx.png)
 
+These were the balances in my accounts before the transaction: 
+
 ![cont1_tx](Screenshots/c2before.png)
 
 And the balances in my accounts changed accordingly:
@@ -97,20 +99,20 @@ The Solidity code is shown in this screenshot:
 
 Just like for the previous two contracts, I first set up the contract on my local chain and then deployed it on ‘Ropsten Test Network`.
 
-In this contract, `msg.sender` if HR who are deploying the contract. 
+In this contract, `msg.sender` is HR who are deploying the contract. 
 At the start of the contract, the employee needs to be employed (`bool active = true`).
 
 The employee is awarded the total of 1000 shares (`uint total_shares = 1000`).
 
 Out of the total number of shares, 250 are vested annually (`uint annual_distribution = 250`).
 
-The contract records the time when it’s activated (`uint start_time = now`)
+The contract records the time when it’s activated (`uint start_time = now`).
 Once the annual distribution is done, the contract then locks for a year. This is managed by the variable `uin unlock_time = now + 365 days`.
 
 Function `distribute` requires that:
 
 - Only HR or the employee can execute the contract ` require(msg.sender == human_resources || msg.sender == employee)`
-- The employee still be employed `require(active == true)`
+- The employee is still employed `require(active == true)`
 - The current time is past the unlock time ` require(unlock_time <= now)`
 - The sum of all annual distributions can’t exceed the total number of shares awarded ` require(distributed_shares < total_shares)`.
 
@@ -118,17 +120,17 @@ The local deployment of this contract is done as follows:
 
 - For this contract, we test the timelock functionality by adding a new variable called `uint fakenow = now;` as the first line of the contract, then replace every other instance of `now` with `fakenow`. 
 
-- We utilize the following `fastforward` function to manipulate `fakenow` during testing.
-
-
-- For example, you can add this function to "fast forward" time by 100 days when the contract is deployed (requires setting up `fakenow`):
+- We utilize the following `fastforward` function to manipulate `fakenow` during testing. For example, you can use this function to "fast forward" time by 100 days when the contract is deployed (requires setting up `fakenow`):
 
 `function fastforward() public {
     fakenow += 100 days;
 }`
 
+In the following screenshot, you can see how using the `fakenow` variable and `fastforward` function, I have simulated several rounds of annual share distributions so that the total number of `distributed_shares` is equal to 1000:
 
-- Once you are satisfied with your contract's logic, revert the `fakenow` testing logic.
+![fakenow](Screenshots/fakenow.png)
+
+- Once I have confirmed that the contract's logic is correct, I reverted the `fakenow` testing logic.
 
 
 
