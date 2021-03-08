@@ -86,3 +86,56 @@ Following this, I deployed `TieredProfitSplitter` contract on `Ropsten Test Netw
 The contract address is `0x1e0692d65a229D987eC0C48a9C9D13Bf82e9d333` and it can be checked on Etherscan:
 
 ![Contract1_On_Ropsten](Screenshots/c2etherscan.png)
+
+# Deferred Equity Plan
+
+This contract is design to facilitate the administration of a deferred equity compensation plan. In this contract, an employee gets awarded 1000 shares as part of her/his compensation and those shares are vested over the next 4 years in equal shares of 25% (250 shares) per year.
+
+The Solidity code is shown in this screenshot:
+
+![Contract1](Screenshots/c3.png)
+
+Just like for the previous two contracts, I first set up the contract on my local chain and then deployed it on ‘Ropsten Test Network`.
+
+In this contract, `msg.sender` if HR who are deploying the contract. 
+At the start of the contract, the employee needs to be employed (`bool active = true`).
+
+The employee is awarded the total of 1000 shares (`uint total_shares = 1000`).
+
+Out of the total number of shares, 250 are vested annually (`uint annual_distribution = 250`).
+
+The contract records the time when it’s activated (`uint start_time = now`)
+Once the annual distribution is done, the contract then locks for a year. This is managed by the variable `uin unlock_time = now + 365 days`.
+
+Function `distribute` requires that:
+
+- Only HR or the employee can execute the contract ` require(msg.sender == human_resources || msg.sender == employee)`
+- The employee still be employed `require(active == true)`
+- The current time is past the unlock time ` require(unlock_time <= now)`
+- The sum of all annual distributions can’t exceed the total number of shares awarded ` require(distributed_shares < total_shares)`.
+
+The local deployment of this contract is done as follows:
+
+- For this contract, we test the timelock functionality by adding a new variable called `uint fakenow = now;` as the first line of the contract, then replace every other instance of `now` with `fakenow`. 
+
+- We utilize the following `fastforward` function to manipulate `fakenow` during testing.
+
+
+- For example, you can add this function to "fast forward" time by 100 days when the contract is deployed (requires setting up `fakenow`):
+
+`function fastforward() public {
+    fakenow += 100 days;
+}`
+
+
+- Once you are satisfied with your contract's logic, revert the `fakenow` testing logic.
+
+
+
+Following the testing on local network with `fastforward` function, I deployed `TieredProfitSplitter` contract on `Ropsten Test Network`:
+
+![cont3_deployed](Screenshots/c3deployed.png)
+
+The contract address is `0x524817038d5868d7557D68336891da05f85fAf19` and it can be checked on Etherscan:
+
+![Contract1_On_Ropsten](Screenshots/c3etherscan.png)
